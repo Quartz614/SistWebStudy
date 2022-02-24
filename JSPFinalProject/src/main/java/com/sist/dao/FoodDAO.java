@@ -3,6 +3,7 @@ import java.util.*;
 
 import com.sist.vo.CategoryVO;
 import com.sist.vo.FoodVO;
+import com.sist.vo.SeoulLocationVO;
 
 import java.sql.*;
 public class FoodDAO {
@@ -47,6 +48,7 @@ public class FoodDAO {
 	   return list;
    }
    // 2. 카테고리별 맛집을 출력 => 카테고리에 해당되는 맛집을 출력 
+   // INSERT INTO m VALUES(?,?,?,?,?)
    public List<FoodVO> categoryFoodListData(int cno)
    {
 	   List<FoodVO> list=new ArrayList<FoodVO>();
@@ -131,7 +133,7 @@ public class FoodDAO {
 	   return vo;
    }
    // 상세보기
-   public FoodVO foodDetailData(int no)
+   public FoodVO foodDetailData(int no,String tname)
    {
 	   FoodVO vo=new FoodVO();
 	   try
@@ -139,30 +141,30 @@ public class FoodDAO {
 		   //1. 주소값을 얻어 온다 
 		   conn=dbcp.getConnection();
 		   //2. SQL 
-		   String sql="SELECT no,cno,name,score,address,tel,type,"
+		   String sql="SELECT no,name,score,address,tel,type,"
 				     +"price,parking,menu,time,poster "
-				     +"FROM food_house "
+				     +"FROM "+tname+" "
 				     +"WHERE no=?";
 		   //3. 전송 (SQL)
 		   ps=conn.prepareStatement(sql);
 		   //4. ?에 값을 채운다 
 		   ps.setInt(1, no);
+		   // ps.setString(2,tname) ==> 'food_house'
 		   //5. 결과값 => vo
 		   ResultSet rs=ps.executeQuery();
 		   rs.next();
 		   vo.setNo(rs.getInt(1));
-		   vo.setCno(rs.getInt(2));
-		   vo.setName(rs.getString(3));
-		   vo.setScore(rs.getDouble(4));
-		   vo.setAddress(rs.getString(5));
-		   vo.setTel(rs.getString(6));
-		   vo.setType(rs.getString(7));
+		   vo.setName(rs.getString(2));
+		   vo.setScore(rs.getDouble(3));
+		   vo.setAddress(rs.getString(4));
+		   vo.setTel(rs.getString(5));
+		   vo.setType(rs.getString(6));
 		   //MVC => 가장 쉬운 방법을 선택 
-		   vo.setPrice(rs.getString(8));
-		   vo.setParking(rs.getString(9));
-		   vo.setMenu(rs.getString(10));
-		   vo.setTime(rs.getString(11));
-		   vo.setPoster(rs.getString(12));
+		   vo.setPrice(rs.getString(7));
+		   vo.setParking(rs.getString(8));
+		   vo.setMenu(rs.getString(9));
+		   vo.setTime(rs.getString(10));
+		   vo.setPoster(rs.getString(11));
 		   System.out.println(vo.getName());
 		   rs.close();
 	   }catch(Exception ex)
@@ -176,6 +178,79 @@ public class FoodDAO {
 	   }
 	   return vo;
    }
+   // 지역별 찾기 (동,구) ==> 
+   public List<FoodVO> foodLocationFindData(String ss,int page)
+   {
+	   List<FoodVO> list=new ArrayList<FoodVO>();
+	   try
+	   {
+		   conn=dbcp.getConnection();
+		   //SQL
+		   String sql="SELECT no,poster,name,num "
+				     +"FROM (SELECT no,poster,name,rownum as num "
+				     +"FROM (SELECT no,poster,name "
+				     +"FROM food_location WHERE address LIKE '%'||?||'%' "
+				     +"ORDER BY 1)) "
+				     +"WHERE num BETWEEN ? AND ?";
+		   ps=conn.prepareStatement(sql);
+		   int rowSize=12;
+		   int start=(rowSize*page)-(rowSize-1);
+		   int end=rowSize*page;
+		   
+		   ps.setString(1, ss);
+		   ps.setInt(2, start);
+		   ps.setInt(3, end);
+		   
+		   ResultSet rs=ps.executeQuery();
+		   while(rs.next())
+		   {
+			   FoodVO vo=new FoodVO();
+			   vo.setNo(rs.getInt(1));
+			   String poster=rs.getString(2);
+			   poster=poster.substring(0,poster.indexOf("^"));
+			   vo.setPoster(poster);
+			   vo.setName(rs.getString(3));
+			   
+			   list.add(vo);
+		   }
+		   rs.close();
+		   
+	   }catch(Exception ex)
+	   {
+		   ex.printStackTrace();
+	   }
+	   finally
+	   {
+		  dbcp.disConnection(conn, ps); 
+	   }
+	   return list;
+   }
+   
+   public int foodLoactionFindTotalPage(String ss)
+   {
+	   int total=0;
+	   try
+	   {
+		   conn=dbcp.getConnection();
+		   String sql="SELECT CEIL(COUNT(*)/12.0) FROM food_location "
+				     +"WHERE address LIKE '%'||?||'%'";
+		   ps=conn.prepareStatement(sql);
+		   ps.setString(1, ss);
+		   ResultSet rs=ps.executeQuery();
+		   rs.next();
+		   total=rs.getInt(1);
+		   rs.close();
+	   }catch(Exception ex)
+	   {
+		  ex.printStackTrace();   
+	   }
+	   finally
+	   {
+		   dbcp.disConnection(conn, ps);
+	   }
+	   return total;
+   }
+   
 }
 
 
