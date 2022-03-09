@@ -3,12 +3,23 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+<title>맛집 & 레시피 & 여행</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link href="../layout/styles/layout.css" rel="stylesheet" type="text/css" media="all">
 </head>
-<body>
-   <h1>${msg }</h1>
-   <a href="../board/list.do">게시판</a><br>
-   <a href="../member/join.do">회원가입</a>
+<body id="top">
+  <%-- header위치 --%>
+  <jsp:include page="header.jsp"></jsp:include>
+  <jsp:include page="${main_jsp }"></jsp:include>
+  <jsp:include page="footer.jsp"></jsp:include>
+<a id="backtotop" href="#top"><i class="fa fa-chevron-up"></i></a> 
+<!-- JAVASCRIPTS --> 
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+<!-- <script src="../layout/scripts/jquery.min.js"></script>  -->
+<script src="../layout/scripts/jquery.backtotop.js"></script> 
+<script src="../layout/scripts/jquery.mobilemenu.js"></script> 
+<script src="../layout/scripts/jquery.flexslider-min.js"></script>
 </body>
 </html>

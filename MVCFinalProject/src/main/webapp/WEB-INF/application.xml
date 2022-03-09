@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+      1. VO
+      2. DAO
+      3. Model => 반드시 XML에 등록 
+      4. JSP 
+      =========== Spring 
+      JSP(X) , Spring(O)
+               ========= 1. Java
+                         2. Oracle
+                         3. XML
+                         4. Annotation
+ -->
+<beans>
+  <bean class="com.sist.model.MainModel"/>
+  <bean class="com.sist.model.FoodModel"/>
+  <bean class="com.sist.model.SeoulModel"/>
+  <bean class="com.sist.model.MemberModel"/>
+  <bean class="com.sist.model.ChatModel"/>
+  <bean class="com.sist.model.ReplyModel"/>
+  <bean class="com.sist.model.FreeBoardModel"/>
+  <bean class="com.sist.model.JjimModel"/>
+  <bean class="com.sist.model.ReserveModel"/>
+</beans>
