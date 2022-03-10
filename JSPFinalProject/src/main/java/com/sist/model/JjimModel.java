@@ -4,7 +4,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.sist.cart.CartVO;
+import com.sist.cart.GoodsDAO;
 import com.sist.controller.RequestMapping;
+import com.sist.dao.ReserveDAO;
+import com.sist.data.input.ReserveVO;
+
 import java.util.*;
 import com.sist.jjim.dao.*;
 public class JjimModel {
@@ -40,6 +45,25 @@ public class JjimModel {
 		  poster=poster.substring(0,poster.indexOf("^"));
 		  vo.setPoster(poster);
 	  }
+	  
+	  List<ReserveVO> rList=ReserveDAO.reserveMyData(id);
+	  if(rList!=null)
+	  {
+		  for(ReserveVO vo:rList)
+		  {
+			  
+			  String poster=vo.getPoster();
+			  if(poster!=null)
+			  {
+			   poster=poster.substring(0,poster.indexOf("^"));
+			   vo.setPoster(poster);
+			  }
+		  }
+	  }
+	  
+	  List<CartVO> cList=GoodsDAO.cartMypageData(id);
+	  request.setAttribute("cList", cList);
+	  request.setAttribute("rList", rList);
 	  request.setAttribute("list", list);
 	  request.setAttribute("main_jsp", "../main/mypage.jsp");
 	  return "../main/main.jsp";
@@ -51,6 +75,17 @@ public class JjimModel {
 	  String no=request.getParameter("no");
 	  JjimDAO.jjimDelete(Integer.parseInt(no));
 	  return "redirect:../main/mypage.do";
+  }
+  @RequestMapping("main/adminpage.do")
+  public String admin_page(HttpServletRequest request,
+		  HttpServletResponse response)
+  {
+	  List<ReserveVO> rList=ReserveDAO.reserveAdminData();
+	  List<CartVO> cList=GoodsDAO.cartAdminpageData();
+	  request.setAttribute("cList", cList);
+	  request.setAttribute("rList", rList);
+	  request.setAttribute("main_jsp", "../main/adminpage.jsp");
+	  return "../main/main.jsp";
   }
   
 }
